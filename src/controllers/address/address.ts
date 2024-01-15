@@ -21,7 +21,7 @@ const getProvinces = async (
   }
 };
 
-const getAddressLevelByParent = async (
+const getDistrictsByProvince = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -42,4 +42,25 @@ const getAddressLevelByParent = async (
   }
 };
 
-export { getProvinces, getAddressLevelByParent };
+const getWardsByDistrict = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { parentId } = req.query;
+  try {
+    const addressLevel = await prisma.addressLevel.findMany({
+      where: {
+        parentId: parentId as string,
+      },
+    });
+    res.status(200).json({
+      message: "Get province success",
+      data: addressLevel,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getProvinces, getDistrictsByProvince, getWardsByDistrict };
