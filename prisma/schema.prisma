@@ -1,0 +1,56 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["rhel-openssl-1.0.x", "native", "debian-openssl-1.1.x"]
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  fullName  String
+  userName  String
+  hash      String
+  role      Role      @default(USER)
+  parent    User?     @relation("UserToUser", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  parentId  String?   @db.ObjectId
+  childrens User[]    @relation("UserToUser")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+model Patient {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  patientCode     String    @unique
+  fullName        String
+  guarantor       String
+  gender          Boolean
+  DOB             DateTime
+  phone           String
+  address         String?
+  addressLevelIds String[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+}
+
+model AddressLevel {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  level     Int
+  name      String
+  lat       Float
+  lng       Float
+  parentId  String?        @db.ObjectId
+  parent    AddressLevel?  @relation("AddressLevels", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  AddressLevel[] @relation("AddressLevels")
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+enum Role {
+  USER
+  ADMIN
+}
