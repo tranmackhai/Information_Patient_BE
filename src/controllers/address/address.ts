@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { prisma } from "../../db";
+import { find } from "lodash";
 
 const getProvinces = async (
   req: Request,
@@ -12,6 +13,7 @@ const getProvinces = async (
         level: 0,
       },
     });
+
     res.status(200).json({
       message: "Get province success",
       data: provinces,

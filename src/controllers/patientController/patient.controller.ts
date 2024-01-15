@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../db";
 import { BadRequest } from "../../handlers/response.handler";
-import moment from "moment";
 
 const createPatient = async (
   req: Request,
@@ -19,12 +18,6 @@ const createPatient = async (
       address,
       addressLevelIds,
     } = req.body;
-
-    // console.log({
-    //   DOB,
-    //   addressLevelIds,
-    //   abc: moment(DOB).toDate(),
-    // });
 
     const existingPatient = await prisma.patient.findFirst({
       where: { patientCode },
@@ -112,9 +105,17 @@ const getPatientById = async (
         message: "No patient found",
       });
     }
+    const provinceId = patient.addressLevelIds[0];
+    const districtId = patient.addressLevelIds[1];
+    const wardId = patient.addressLevelIds[2];
     res.status(200).json({
       message: "Patient fetched",
-      data: patient,
+      data: {
+        ...patient,
+        provinceId,
+        districtId,
+        wardId,
+      },
     });
   } catch (error) {
     next(error);
@@ -209,8 +210,8 @@ const deletePatient = async (
 
 export {
   createPatient,
-  updatePatient,
   deletePatient,
-  getPatientById,
   getAllPatient,
+  getPatientById,
+  updatePatient,
 };
