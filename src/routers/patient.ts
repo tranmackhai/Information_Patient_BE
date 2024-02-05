@@ -19,4 +19,4 @@ patientRouter.post(
 patientRouter.get("/", [authMiddleware], getAllPatient);
 patientRouter.get("/:id", [authMiddleware], getPatientById);
 patientRouter.post("/update/:id", [authMiddleware], updatePatient);
-patientRouter.get("/delete/:id", [authMiddleware], deletePatient);
+patientRouter.delete("/delete/:id", [authMiddleware], deletePatient);
