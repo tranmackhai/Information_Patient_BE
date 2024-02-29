@@ -27,7 +27,7 @@ const useDeletedMiddleware = async (
           params.args["where"] = {
             ...(params.args?.["where"] ?? {}),
             deletedAt: {
-              isSet: false,
+              equals: null,
             },
           };
         }

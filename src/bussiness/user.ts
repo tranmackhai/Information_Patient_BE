@@ -1,7 +1,7 @@
 import { User } from "@prisma/client";
 import { prisma } from "../db";
 
-const getUser = async (id: string): Promise<User | null> => {
+const getUser = async (id: number): Promise<User | null> => {
   const user = await prisma.user.findFirst({
     where: {
       id,

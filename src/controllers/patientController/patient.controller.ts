@@ -9,21 +9,26 @@ const createPatient = async (
 ) => {
   try {
     const {
+      fullName,
       patientCode,
       guarantor,
-      fullName,
       gender,
       DOB,
       phone,
       address,
-      addressLevelIds,
+      province,
+      district,
+      ward,
+      motherBloodGroup,
+      childBloodGroup,
     } = req.body;
-
+    console.log(req.body);
     const existingPatient = await prisma.patient.findFirst({
       where: { patientCode },
     });
 
     if (existingPatient) {
+      // console.log("Tồn tại");
       throw new BadRequest({
         message: "Patient code already exists",
       });
@@ -31,14 +36,18 @@ const createPatient = async (
 
     const newPatient = await prisma.patient.create({
       data: {
-        patientCode,
         fullName,
+        patientCode,
         guarantor,
         gender,
         DOB,
         phone,
         address,
-        addressLevelIds,
+        province,
+        district,
+        ward,
+        motherBloodGroup,
+        childBloodGroup,
       },
     });
 
@@ -47,6 +56,7 @@ const createPatient = async (
       data: newPatient,
     });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
@@ -97,7 +107,7 @@ const getPatientById = async (
     const { id } = req.params;
     const patient = await prisma.patient.findUnique({
       where: {
-        id,
+        id: Number(id),
       },
     });
     if (!patient) {
@@ -105,20 +115,13 @@ const getPatientById = async (
         message: "No patient found",
       });
     }
-    const provinceId = patient.addressLevelIds[0];
-    const districtId = patient.addressLevelIds[1];
-    const wardId = patient.addressLevelIds[2];
     res.status(200).json({
-      message: "Patient fetched",
-      data: {
-        ...patient,
-        provinceId,
-        districtId,
-        wardId,
-      },
+      message: "Thông tin bệnh nhân được truy xuất bằng ID",
+      data: patient,
     });
   } catch (error) {
     next(error);
+    console.log(error);
   }
 };
 
@@ -137,12 +140,16 @@ const updatePatient = async (
       DOB,
       phone,
       address,
-      addressLevelIds,
+      province,
+      district,
+      ward,
+      motherBloodGroup,
+      childBloodGroup,
     } = req.body;
 
     const patient = await prisma.patient.findFirst({
       where: {
-        id,
+        id: Number(id),
       },
     });
 
@@ -151,6 +158,14 @@ const updatePatient = async (
         message: "Patient not found",
       });
     }
+
+    // const updatedBeforePregnancyCondition = beforePregnancyCondition?.map(
+    //   (pathology: { key: string; isSelect: boolean; note: string }) => ({
+    //     key: pathology.key,
+    //     isSelect: pathology.isSelect,
+    //     note: pathology.note,
+    //   })
+    // );
 
     const newPatient = await prisma.patient.update({
       where: {
@@ -164,10 +179,13 @@ const updatePatient = async (
         DOB,
         phone,
         address,
-        addressLevelIds,
+        province,
+        district,
+        ward,
+        motherBloodGroup,
+        childBloodGroup,
       },
     });
-
     res.status(200).json({
       data: newPatient,
       message: "Update success",
@@ -186,7 +204,7 @@ const deletePatient = async (
     const { id } = req.params;
     const patient = await prisma.patient.findFirst({
       where: {
-        id,
+        id: Number(id),
       },
     });
     if (!patient) {

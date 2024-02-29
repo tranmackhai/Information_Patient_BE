@@ -22,7 +22,9 @@ const createPatientValidator = (
     fullName: Joi.string().required(),
     guarantor: Joi.string().required(),
     address: Joi.string(),
-    addressLevelIds: Joi.array().items(Joi.string()).required(),
+    province: Joi.string().required(),
+    district: Joi.string().required(),
+    ward: Joi.string().required(),
   });
 
   const { error } = schema.validate({

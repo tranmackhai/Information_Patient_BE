@@ -49,6 +49,7 @@ const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
     const user = await prisma.user.findMany({
       where: {
         role: "USER",
+        deletedAt: null,
       },
       take,
       skip,
@@ -61,9 +62,10 @@ const getAllUser = async (req: Request, res: Response, next: NextFunction) => {
         role: "USER",
       },
     });
+    // console.log(page);
+
     const usersPromise = await Promise.all(
       user.map(async (user) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { hash, ...rest } = user;
         return {
           ...rest,
@@ -91,7 +93,7 @@ const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     const user = await prisma.user.findUnique({
       where: {
-        id,
+        id: Number(id),
       },
     });
     if (!user) {
@@ -113,7 +115,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const { fullName } = req.body;
-    const user = await getUser(id);
+    const user = await getUser(Number(id));
     if (!user) {
       throw new NotfoundRequest({
         message: "user not found",
@@ -142,7 +144,7 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const user = await getUser(id);
+    const user = await getUser(Number(id));
     if (!user) {
       throw new NotfoundRequest({
         message: "User not found",
@@ -201,4 +203,3 @@ export {
   deleteUser,
   updatePassword,
 };
-``;

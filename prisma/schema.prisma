@@ -1,21 +1,21 @@
-datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["rhel-openssl-1.0.x", "native", "debian-openssl-1.1.x"]
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 model User {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        Int       @id @default(autoincrement())
   fullName  String
   userName  String
   hash      String
-  role      Role      @default(USER)
+  role      String?   @default("USER")
   parent    User?     @relation("UserToUser", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  parentId  String?   @db.ObjectId
+  parentId  Int?
   childrens User[]    @relation("UserToUser")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -23,34 +23,27 @@ model User {
 }
 
 model Patient {
-  id              String    @id @default(auto()) @map("_id") @db.ObjectId
-  patientCode     String    @unique
-  fullName        String
-  guarantor       String
-  gender          Boolean
-  DOB             DateTime
-  phone           String
-  address         String?
-  addressLevelIds String[]
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  id               Int       @id @default(autoincrement())
+  patientCode      String    @unique
+  fullName         String
+  guarantor        String
+  gender           Boolean
+  DOB              DateTime
+  phone            String
+  address          String?
+  province         String
+  district         String
+  ward             String
+  motherBloodGroup String?
+  childBloodGroup  String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
+  // benhly            []
 }
 
-model AddressLevel {
-  id        String         @id @default(auto()) @map("_id") @db.ObjectId
-  level     Int
-  name      String
-  lat       Float
-  lng       Float
-  parentId  String?        @db.ObjectId
-  parent    AddressLevel?  @relation("AddressLevels", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  children  AddressLevel[] @relation("AddressLevels")
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-}
-
-enum Role {
-  USER
-  ADMIN
-}
+// type benhly {
+//   note String,
+//   check Boolean,
+//   value String
+// }

@@ -12,7 +12,7 @@ const adminMiddleware = async (
 ) => {
   try {
     const accessToken = req.headers?.authorization?.split(" ")[1] || "";
-    const { id } = jwt.decode(accessToken) as { id: string };
+    const { id } = jwt.decode(accessToken) as { id: number };
     const user = await prisma.user.findUnique({
       where: {
         id,
